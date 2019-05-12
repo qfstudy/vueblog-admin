@@ -1,4 +1,4 @@
-const router = require('koa-router')();
+const router = require('koa-router')()
 const mysqlModel = require('../mysql/mysql.js')
 
 router.get('/user',async(ctx,next)=>{
@@ -18,30 +18,30 @@ router.get('/user',async(ctx,next)=>{
 })
 
 // searchUserInfo
-router.post('/userinfo',async(ctx,next)=>{
-  console.log(ctx.request.body)
-  // name=?,school=?,userweb=?,blog=?,github=?;"
-  // await mysqlModel.addUserInfo([name,school,userweb,blog,github])
-  //   .then(result => {
-  //     res = result
-  //   })
-  // ctx.body = {
-  //   // session: ctx.session,
-  //   // articles: res
-  // }
-})
+// router.post('/userinfo',async(ctx,next)=>{
+//   console.log(ctx.request.body)
+//   // name=?,school=?,userweb=?,blog=?,github=?;"
+//   // await mysqlModel.addUserInfo([name,school,userweb,blog,github])
+//   //   .then(result => {
+//   //     res = result
+//   //   })
+//   // ctx.body = {
+//   //   // session: ctx.session,
+//   //   // articles: res
+//   // }
+// })
 
-router.get('/userinfo',async(ctx,next)=>{
-  console.log(ctx.request.body)
-  // name=?,school=?,userweb=?,blog=?,github=?;"
-  await mysqlModel.searchUserInfo(name)
-    .then(result => {
-      res = result
-    })
-  ctx.body = {
-    // session: ctx.session,
-    // articles: res
-  }
-})
+// router.get('/userinfo',async(ctx,next)=>{
+//   console.log(ctx.request.body)
+//   // name=?,school=?,userweb=?,blog=?,github=?;"
+//   await mysqlModel.searchUserInfo(name)
+//     .then(result => {
+//       res = result
+//     })
+//   ctx.body = {
+//     // session: ctx.session,
+//     // articles: res
+//   }
+// })
 
 module.exports=router

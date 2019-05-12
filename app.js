@@ -80,7 +80,7 @@ app.use(require('./src/routers/writeArticle.js').routes())
 app.use(require('./src/routers/article.js').routes())
 app.use(require('./src/routers/comment.js').routes())
 app.use(require('./src/routers/editArticle.js').routes())
-// app.use(require('./src/routers/user.js').routes())
+app.use(require('./src/routers/user.js').routes())
 
 app.listen(mysqlConfig.port)
 
