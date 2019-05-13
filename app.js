@@ -39,7 +39,7 @@ let cookie = {
   path: '/', 
   httpOnly: false,
   expires: false,
-  maxAge: 60*60*60*24
+  // maxAge: 60*60*60*24
 }
 
 // session存储配置

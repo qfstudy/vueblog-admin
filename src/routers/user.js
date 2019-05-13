@@ -17,31 +17,16 @@ router.get('/user',async(ctx,next)=>{
   }
 })
 
-// searchUserInfo
-// router.post('/userinfo',async(ctx,next)=>{
-//   console.log(ctx.request.body)
-//   // name=?,school=?,userweb=?,blog=?,github=?;"
-//   // await mysqlModel.addUserInfo([name,school,userweb,blog,github])
-//   //   .then(result => {
-//   //     res = result
-//   //   })
-//   // ctx.body = {
-//   //   // session: ctx.session,
-//   //   // articles: res
-//   // }
-// })
-
-// router.get('/userinfo',async(ctx,next)=>{
-//   console.log(ctx.request.body)
-//   // name=?,school=?,userweb=?,blog=?,github=?;"
-//   await mysqlModel.searchUserInfo(name)
-//     .then(result => {
-//       res = result
-//     })
-//   ctx.body = {
-//     // session: ctx.session,
-//     // articles: res
-//   }
-// })
+router.get('/userinfo',async(ctx,next)=>{
+  let name=ctx.request.query.userName
+  let res
+  await mysqlModel.searchUser(name)
+    .then(result => {
+      res = result
+    })
+  ctx.body = {
+    userInfo: res
+  }
+})
 
 module.exports=router
