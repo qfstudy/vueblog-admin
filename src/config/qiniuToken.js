@@ -1,12 +1,13 @@
 const qiniu = require('qiniu')
 
-var accessKey = 'your access key'
-var secretKey = 'your secret key'
+let accessKey = '******'
+let secretKey = '*****'
 
 let mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 
 let options = {
   scope: 'vue-blog',
+  expires: 3153600000
   // returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize)}'
   // callbackBodyType: 'application/json'
 }
