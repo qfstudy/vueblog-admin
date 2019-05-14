@@ -24,8 +24,7 @@ app.use(cors({
   },
   //使用axios时需要前后端设置credentials，否则请求并没有带cookie
   credentials: true,
-  //带有cookie
-  allowHeaders: ['Content-Type', 'Authorization', 'Accept'] 
+  // allowHeaders: ['Content-Type', 'Authorization', 'Accept'] 
 }))
 
 // 静态资源目录路径
@@ -51,14 +50,26 @@ const store = new mysqlStore({
 })
 
 // app.use(async (ctx, next) => {
-  // 获取hostname，设置cookie的domain属性值
-  // console.log(ctx.request.hostname)
-  // sessionOptions.cookie.domain = ctx.request.hostname
-  // await next()
+//   ctx.cookies.set(
+//     'cid', 
+//     'hello world',
+//     {
+//       domain: 'localhost',  // 写cookie所在的域名
+//       path: '/',       // 写cookie所在的路径
+//       // maxAge: 10 * 60 * 1000, // cookie有效时长
+//       // expires: new Date('2017-02-15'),  // cookie失效时间
+//       httpOnly: false,  // 是否只用于http请求中获取
+//       // overwrite: false  // 是否允许重写
+//     }
+//   )
+//   // 获取hostname，设置cookie的domain属性值
+//   // console.log(ctx.request.hostname)
+//   // sessionOptions.cookie.domain = ctx.request.hostname
+//   await next()
 // })
 
 app.use(session({
-  key: 'USERS_ID',
+  key: 'USERS',
   store,
   cookie
 }))

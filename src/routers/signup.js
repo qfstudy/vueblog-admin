@@ -7,10 +7,10 @@ const path=require('path')
 const uploadToQiniu=require('../config/qiniuToken.js')
 
 // post 注册
-router.post('/signup', async(ctx, next) => {
+router.post('/blog/signup', async(ctx) => {
   // console.log(ctx.request.body)
-  let {name,password,avatar}=ctx.request.body
-  await mysqlModel.searchUserByName(name)
+  let {userName,password,avatar}=ctx.request.body
+  await mysqlModel.searchUserByName(userName)
     .then(async (result) => {
       if (result.length>0) {
         ctx.body = {
@@ -45,7 +45,7 @@ router.post('/signup', async(ctx, next) => {
 
       let qiniuUrl = `http://qiniu.qifei.site/${key}`
 
-      await mysqlModel.addUser([name, md5(password), qiniuUrl, moment().format('YYYY-MM-DD HH:mm:ss')])
+      await mysqlModel.addUser([userName, md5(password), qiniuUrl, moment().format('YYYY-MM-DD HH:mm:ss')])
         .then(res=>{
           ctx.body = {
             code: 200,

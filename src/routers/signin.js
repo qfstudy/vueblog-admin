@@ -2,17 +2,19 @@ const router = require('koa-router')();
 const mysqlModel = require('../mysql/mysql.js')
 const md5 = require('md5')
 
-router.post('/signin', async (ctx, next) => {
-  let {name,password} = ctx.request.body
-  await mysqlModel.searchUserByName(name)
+router.post('/blog/signin', async (ctx) => {
+  // console.log('signin+++++++++ctx')
+  // console.log(ctx.request.body)
+  // console.log('signin+++++++++ctx')
+  let {userName,password} = ctx.request.body
+  await mysqlModel.searchUserByName(userName)
     .then(result => {
-      let res = result
-      console.log(res[0])
-      if (res.length && name === res[0]['name'] && md5(password) === res[0]['password']) {
+      if (result.length && userName === result[0]['name'] && md5(password) === result[0]['password']) {
         ctx.session = {
-          user: res[0]['name'],
-          id: res[0]['id']
+          user: result[0]['name'],
+          id: result[0]['id']
         }
+        console.log('signin: '+'登录成功')
         ctx.body = {
           code: 200,
           message: '登录成功'

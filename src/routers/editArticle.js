@@ -2,55 +2,49 @@ const router = require('koa-router')();
 const mysqlModel = require('../mysql/mysql.js')
 const  showdown  = require('showdown') 
 const converter = new showdown.Converter()
+const checkSessionValue = require('../check/check.js').checkSessionValue
 
 // 编辑单篇文章页面
-router.get('/edit', async (ctx, next) => {
-  let articleId = ctx.request.query.articleId
-  let res
-  await mysqlModel.searchByArticleId(articleId)
-    .then(result => {
-      res = result[0]
-    })
-  ctx.body = {
-    session: ctx.session,
-    article: res
-  }
+router.post('/blog/getedit', async (ctx) => {
+  let articleId = ctx.request.body.articleId
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.searchByArticleId(articleId)
+      .then(result => {
+        let res = result[0]
+        ctx.body = {
+          code: 200,
+          // session: ctx.session,
+          article: res
+        }
+      })
+  }).catch((error)=>{
+    ctx.body={
+      code: 400,
+      message: error
+    }
+  })
 })
 
-// post 编辑单篇文章
-router.post('/edit', async (ctx, next) => {
+// 保存编辑单篇文章
+router.post('/blog/saveeditarticle', async (ctx) => {
   let title = ctx.request.body.title
   let content = ctx.request.body.content
   let articleId = ctx.request.body.articleId
-  let allowEdit = true
-  await mysqlModel.searchByArticleId(articleId)
-    .then(res => {
-      if (res[0].name != ctx.session.user) {
-        allowEdit = false
-      } else {
-        allowEdit = true
+  let newContent=converter.makeHtml(content).replace(/\n/gi,"<br/>")
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.updateArticle([title, newContent, content, articleId])
+    .then((res) => {
+      ctx.body = {
+        code: 200,
+        message: '编辑成功'
       }
     })
-  let newContent=converter.makeHtml(content).replace(/\n/gi,"<br/>")
-  if (allowEdit) {
-    await mysqlModel.updateArticle([title, newContent, content, articleId])
-      .then(() => {
-        ctx.body = {
-          code: 200,
-          message: '编辑成功'
-        }
-      }).catch(() => {
-        ctx.body = {
-          code: 500,
-          message: '编辑失败'
-        }
-      })
-  } else {
+  }).catch((error) => {
     ctx.body = {
-      code: 404,
-      message: '没有权限修改'
+      code: 500,
+      message: error
     }
-  }
+  })  
 })
 
 module.exports = router
