@@ -49,25 +49,6 @@ const store = new mysqlStore({
   host: mysqlConfig.database.HOST,
 })
 
-// app.use(async (ctx, next) => {
-//   ctx.cookies.set(
-//     'cid', 
-//     'hello world',
-//     {
-//       domain: 'localhost',  // 写cookie所在的域名
-//       path: '/',       // 写cookie所在的路径
-//       // maxAge: 10 * 60 * 1000, // cookie有效时长
-//       // expires: new Date('2017-02-15'),  // cookie失效时间
-//       httpOnly: false,  // 是否只用于http请求中获取
-//       // overwrite: false  // 是否允许重写
-//     }
-//   )
-//   // 获取hostname，设置cookie的domain属性值
-//   // console.log(ctx.request.hostname)
-//   // sessionOptions.cookie.domain = ctx.request.hostname
-//   await next()
-// })
-
 app.use(session({
   key: 'USERS',
   store,
@@ -76,9 +57,7 @@ app.use(session({
 
 app.use(bodyParser({
   formLimit: '1mb',
-  jsonLimit:"3mb",　//图片上传大小限制设置
-  // textLimit:"3mb",
-  // enableTypes: ['json', 'form', 'text']
+  jsonLimit:"3mb"
 }))
 
 //路由

@@ -13,7 +13,6 @@ router.post('/blog/getedit', async (ctx) => {
         let res = result[0]
         ctx.body = {
           code: 200,
-          // session: ctx.session,
           article: res
         }
       })

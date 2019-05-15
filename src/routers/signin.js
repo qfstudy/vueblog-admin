@@ -3,9 +3,6 @@ const mysqlModel = require('../mysql/mysql.js')
 const md5 = require('md5')
 
 router.post('/blog/signin', async (ctx) => {
-  // console.log('signin+++++++++ctx')
-  // console.log(ctx.request.body)
-  // console.log('signin+++++++++ctx')
   let {userName,password} = ctx.request.body
   await mysqlModel.searchUserByName(userName)
     .then(result => {

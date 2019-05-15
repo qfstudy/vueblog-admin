@@ -4,23 +4,22 @@ const checkSessionValue = require('../check/check.js').checkSessionValue
 
 router.post('/blog/userallarticle',async(ctx)=>{
   let name=ctx.request.body.userName
-  await checkSessionValue(ctx).then(async (res)=>{
-    await mysqlModel.searchArticleByUser(name)
-      .then(result => {
-        result.forEach((item)=>{
-          item.content=item.content.split('<pre>')[0].replace(/<[^>]+>/g,"").trim()
-        })
-        ctx.body = {
-          code: 200,
-          articles: result
-        }
-      })    
-  }).catch((error)=>{
-    ctx.body={
-      code: 400,
-      message: error
-    }
-  })
+  await mysqlModel.searchArticleByUser(name)
+    .then(result => {
+      result.forEach((item)=>{
+        item.content=item.content.split('<pre>')[0].replace(/<[^>]+>/g,"").trim()
+      })
+      ctx.body = {
+        code: 200,
+        articles: result
+      }
+    })    
+    .catch((error)=>{
+      ctx.body={
+        code: 400,
+        message: error
+      }
+    })
 })
 
 router.get('/blog/getuserinfo',async (ctx)=>{

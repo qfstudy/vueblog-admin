@@ -8,7 +8,6 @@ const uploadToQiniu=require('../config/qiniuToken.js')
 
 // post 注册
 router.post('/blog/signup', async(ctx) => {
-  // console.log(ctx.request.body)
   let {userName,password,avatar}=ctx.request.body
   await mysqlModel.searchUserByName(userName)
     .then(async (result) => {
@@ -17,8 +16,7 @@ router.post('/blog/signup', async(ctx) => {
           code: 400,
           message: '用户名已注册'
         }  
-      } else {
-      
+      } else {      
       let base64Data = avatar.replace(/^data:image\/\w+;base64,/, "")
       let dataBuffer = Buffer.from(base64Data, 'base64')
      
@@ -52,14 +50,14 @@ router.post('/blog/signup', async(ctx) => {
             message: '注册成功'
           }
         })
-        .catch((err)=>{
-          console.log('signup: ')
-          console.log(err)
-          ctx.body={
-            code: 500,
-            message: err
-          }
-        })
+       
+      }
+    }) .catch((err)=>{
+      console.log('signup: ')
+      console.log(err)
+      ctx.body={
+        code: 500,
+        message: err
       }
     })
 })
