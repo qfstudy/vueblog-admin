@@ -63,7 +63,6 @@ app.use(bodyParser({
 //路由
 app.use(require('./src/routers/signup.js').routes())
 app.use(require('./src/routers/signin.js').routes())
-app.use(require('./src/routers/checklogin.js').routes())
 app.use(require('./src/routers/signout.js').routes())
 app.use(require('./src/routers/allArticle.js').routes())
 app.use(require('./src/routers/writeArticle.js').routes())
