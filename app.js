@@ -10,22 +10,6 @@ const mysqlConfig = require('./src/config/config.js')
 
 const app = new Koa()
 
-//cors
-app.use(cors({
-  origin: function(ctx){
-    if(ctx.url === '/test'){
-      return '*'
-    }
-    // 可以通过
-    // sessionOptions.cookie.domain = ctx.request.hostname
-    //动态设置跨域
-    return 'http://localhost:8080'
-    // return '*'
-  },
-  //使用axios时需要前后端设置credentials，否则请求并没有带cookie
-  credentials: true,
-  // allowHeaders: ['Content-Type', 'Authorization', 'Accept'] 
-}))
 
 // 静态资源目录路径
 app.use(static(
@@ -34,11 +18,9 @@ app.use(static(
 
 // 存放sessionId的cookie配置
 let cookie = {
-  domain: 'localhost',
   path: '/', 
   httpOnly: false,
-  expires: false,
-  // maxAge: 60*60*60*24
+  maxAge: 60*60*2
 }
 
 // session存储配置
@@ -50,7 +32,7 @@ const store = new mysqlStore({
 })
 
 app.use(session({
-  key: 'USERS',
+  key: 'BLOG_USER',
   store,
   cookie
 }))
@@ -59,6 +41,20 @@ app.use(bodyParser({
   formLimit: '1mb',
   jsonLimit:"3mb"
 }))
+
+app.use(async (ctx,next)=>{
+  if (ctx.method === 'OPTIONS') {
+    ctx.body = ''
+  }
+  ctx.set('Access-Control-Allow-Origin', 'http://localhost:8080')
+  ctx.set("Access-Control-Allow-Headers", "x-requested-with, accept, origin, content-type")
+  //使用axios时需要前后端设置credentials，否则请求并没有带cookie。
+  //使用Access-Control-Allow-Credentials时，Access-Control-Allow-Origin值只能是一个域名
+  ctx.set('Access-Control-Allow-Credentials', true)
+  ctx.set('Access-Control-Allow-Methods','*')
+  ctx.set('Access-Control-Allow-Headers', 'Content-Type,Access-Token,Authorization,Accept')
+  await next()
+})
 
 //路由
 app.use(require('./src/routers/signup.js').routes())
@@ -71,6 +67,6 @@ app.use(require('./src/routers/comment.js').routes())
 app.use(require('./src/routers/editArticle.js').routes())
 app.use(require('./src/routers/user.js').routes())
 
-app.listen(mysqlConfig.port)
+app.listen(5000)
 
 console.log(`listening on port ${mysqlConfig.port}`)

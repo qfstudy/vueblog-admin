@@ -2,7 +2,7 @@ const router = require('koa-router')()
 
 router.post('/blog/signout', async (ctx) => {
   ctx.session = null
-  ctx.cookies.set('USERS', '', {
+  ctx.cookies.set('BLOG_USER', '', {
     maxAge: 0
   })
   console.log('登出成功')

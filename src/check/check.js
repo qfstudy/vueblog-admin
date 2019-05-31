@@ -2,8 +2,8 @@ const mysqlModel = require('../mysql/mysql.js')
 
 module.exports ={
   checkSessionValue:async (ctx)=>{
-    let cookie=ctx.cookies.get('USERS')
-    let sessionId=`USERS:${cookie}`
+    let cookie=ctx.cookies.get('BLOG_USER')
+    let sessionId=`BLOG_USER:${cookie}`
     let result
 
     await mysqlModel.searchSession(sessionId).then((res)=>{
