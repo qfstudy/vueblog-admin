@@ -106,115 +106,40 @@ if(!tableToObj.isCreateTable){
 }
 
 //查找session验证cookie
-exports.searchSession = ( sessionId ) => {
+let findSession = ( sessionId ) => {
   let _sql=`select data from _mysql_session_store where id="${sessionId}";`
   return query( _sql )
 }
 
 // 添加用户 
-exports.addUser = (userName, password, time) => {
-  let _sql = `insert into users set name="${userName}",password="${password}",moment="${time}";`
+let addUser = (userName, password, time) => {
+  let _sql = `insert into users set userName="${userName}",password="${password}",time="${time}";`
   return query(_sql,)
 }
 
-// 查找用户  
-exports.searchUser = ( name ) => {
-  let _sql = `select * from users where name="${name}";`
+//通过名字查找用户 判断是否已经存在 
+let findUserByName = ( userName ) => {
+  let _sql = `select * from users where userName="${userName}";`
   return query( _sql )
 }
-//　发布文章  
-exports.addArticle = ( value ) => {
-  let _sql = "insert into articles set name=?,title=?,content=?,md=?,userid=?,moment=?,avatar=?;"
-  return query( _sql, value )
-}
-// 增加文章评论数  
-exports.addArticleCommentCount = ( value ) => {
-  let _sql = "update articles set comments = comments + 1 where id=?"
-  return query( _sql, value )
-}
-// 减少文章评论数  
-exports.reduceArticleCommentCount = ( value ) => {
-  let _sql = "update articles set comments = comments - 1 where id=?"
-  return query( _sql, value )
-}
 
-// 更新浏览数 
-exports.updateArticlePv = ( value ) => {
-  let _sql = "update articles set pv= pv + 1 where id=?"
-  return query( _sql, value )
-}
-
-// 发表评论  
-exports.addComment = ( value ) => {
-  let _sql = "insert into comments set name=?,content=?,moment=?,articleid=?,avatar=?;"
-  return query( _sql, value )
-}
-// 通过名字查找用户 判断是否已经存在 
-exports.searchUserByName =  ( name ) => {
-  let _sql = `select * from users where name="${name}";`
-  return query( _sql)
-}
-
-// 通过用户的名字查找文章 
-exports.searchArticleByUser =  ( name ) => {
-  let _sql = `select * from articles where name="${name}";`
-  return query( _sql)
-}
-// 通过文章id查找  
-exports.searchByArticleId =  ( id ) => {
-  let _sql = `select * from articles where id="${id}";`
-  return query( _sql)
-}
-// 通过articleid查找
-exports.searchCommentByArticleId =  ( id ) => { 
-  let _sql = `select * from comments where articleid="${id}" order by id desc;`
-  return query( _sql)
-}
-
-// 通过文章id查找评论数  
-exports.searchCommentCountById =  ( id ) => {
-  let _sql = `select count(articleid) as count from comments where articleid="${id}";`
-  return query( _sql)
-}
-
-// 通过评论id查找  
-exports.searchComment = ( id ) => {
-  let _sql = `select * from comments where id="${id}";`
-  return query( _sql)
-}
-// 查询所有文章  
-exports.searchAllArticle = () => {
+// 获取所有文章  
+let getAllArticle = () => {
   let _sql = `select * from articles;`
   return query( _sql)
 }
-// 查询所有文章数量
-exports.searchAllArticleCount = () => {
-  let _sql = `select count(*) as count from articles;`
-  return query( _sql)
+
+//　发布文章  
+let addArticle = ( value ) => {
+  let _sql = "insert into articles set name=?,title=?,content=?,md=?,userid=?,date=?;"
+  return query( _sql, value )
 }
 
-// 查询所有个人用户文章数量
-exports.searchArticleCountByName = (name) => {
-  let _sql = `select count(*) as count from articles where name="${name}";`
-  return query( _sql)
-}
-// 更新修改文章  
-exports.updateArticle = (values) => {
-  let _sql = `update articles set title=?,content=?,md=? where id=?`
-  return query(_sql,values)
-}
-// 删除文章  
-exports.deleteArticle = (id) => {
-  let _sql = `delete from articles where id = ${id}`
-  return query(_sql)
-}
-// 删除评论  
-exports.deleteComment = (id) => {
-  let _sql = `delete from comments where id=${id}`
-  return query(_sql)
-}
-// 删除所有评论  
-exports.deleteAllArticleComment = (id) => {
-  let _sql = `delete from comments where articleid=${id}`
-  return query(_sql)
+module.exports = {
+  findUserByName,
+  addUser,
+  findUserByName,
+  getAllArticle,
+  findSession,
+  addArticle
 }

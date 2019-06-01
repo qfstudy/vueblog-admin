@@ -1,3 +1,4 @@
 node_modules/
 # public/images
-# src/config/qiniuToken.js
+src/config/qiniuToken.js
+src/config/config.js

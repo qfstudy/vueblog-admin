@@ -22,26 +22,26 @@ router.post('/blog/userallarticle',async(ctx)=>{
     })
 })
 
-router.get('/blog/getuserinfo',async (ctx)=>{
-  await checkSessionValue(ctx).then(async res=>{
-    let name=res.userName
-    await mysqlModel.searchUser(name)
-      .then(result => {
-        let res=result[0]
-        ctx.body = {
-          code: 200,
-          userInfo: {
-            userName: res.name,
-            avatar: res.avatar
-          }
-        }
-      })
-  }).catch((error)=>{
-    console.log('getuserinfo error')
-    console.log(error)
-    console.log('getuserinfo error')
-    ctx.body=error
-  }) 
-})
+// router.get('/blog/getuserinfo',async (ctx)=>{
+//   await checkSessionValue(ctx).then(async res=>{
+//     let name=res.userName
+//     await mysqlModel.searchUser(name)
+//       .then(result => {
+//         let res=result[0]
+//         ctx.body = {
+//           code: 200,
+//           userInfo: {
+//             userName: res.name,
+//             avatar: res.avatar
+//           }
+//         }
+//       })
+//   }).catch((error)=>{
+//     console.log('getuserinfo error')
+//     console.log(error)
+//     console.log('getuserinfo error')
+//     ctx.body=error
+//   }) 
+// })
 
 module.exports=router

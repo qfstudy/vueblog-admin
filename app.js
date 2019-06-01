@@ -19,8 +19,9 @@ app.use(static(
 // 存放sessionId的cookie配置
 let cookie = {
   path: '/', 
-  httpOnly: false,
-  maxAge: 60*60*2
+  httpOnly: true,
+  // 毫秒为单位
+  maxAge: 1000*60*60*2
 }
 
 // session存储配置
@@ -57,15 +58,17 @@ app.use(async (ctx,next)=>{
 })
 
 //路由
-app.use(require('./src/routers/signup.js').routes())
-app.use(require('./src/routers/signin.js').routes())
-app.use(require('./src/routers/signout.js').routes())
-app.use(require('./src/routers/allArticle.js').routes())
-app.use(require('./src/routers/writeArticle.js').routes())
-app.use(require('./src/routers/article.js').routes())
-app.use(require('./src/routers/comment.js').routes())
-app.use(require('./src/routers/editArticle.js').routes())
-app.use(require('./src/routers/user.js').routes())
+app.use(require('./src/routes/frontend.js').routes())
+// app.use(require('./src/routes/signup.js').routes())
+// app.use(require('./src/routes/signin.js').routes())
+// app.use(require('./src/routes/signout.js').routes())
+// app.use(require('./src/routes/allArticle.js').routes())
+app.use(require('./src/routes/writeArticle.js').routes())
+app.use(require('./src/routes/article.js').routes())
+app.use(require('./src/routes/comment.js').routes())
+app.use(require('./src/routes/editArticle.js').routes())
+app.use(require('./src/routes/user.js').routes())
+
 
 app.listen(5000)
 
