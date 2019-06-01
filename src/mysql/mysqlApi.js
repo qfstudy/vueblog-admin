@@ -135,11 +135,73 @@ let addArticle = ( value ) => {
   return query( _sql, value )
 }
 
+// 通过文章id查找  
+let findArticleById =  ( id ) => {
+  let _sql = `select * from articles where id="${id}";`
+  return query( _sql)
+}
+
+// 更新浏览数 
+let updateArticlePv = ( value ) => {
+  let _sql = "update articles set pv= pv + 1 where id=?"
+  return query( _sql, value )
+}
+
+// 删除文章  
+let deleteArticle = (id) => {
+  let _sql = `delete from articles where id = ${id}`
+  return query(_sql)
+}
+
+// 删除文章所有评论  
+let deleteArticleComment = (id) => {
+  let _sql = `delete from comments where articleid=${id}`
+  return query(_sql)
+}
+
+// 发表评论  
+let addComment = ( value ) => {
+  let _sql = "insert into comments set userName=?,content=?,date=?,articleid=?,avatar=?;"
+  return query( _sql, value )
+}
+
+// 增加文章评论数  
+let addArticleCommentCount = ( value ) => {
+  let _sql = "update articles set comments = comments + 1 where id=?"
+  return query( _sql, value )
+}
+// 减少文章评论数  
+let reduceArticleCommentCount = ( value ) => {
+  let _sql = "update articles set comments = comments - 1 where id=?"
+  return query( _sql, value )
+}
+
+// 通过articleid查找
+let findCommentByArticleId =  ( id ) => { 
+  let _sql = `select * from comments where articleid="${id}" order by id desc;`
+  return query( _sql)
+}
+
+// 删除评论  
+let deleteComment = (id) => {
+  let _sql = `delete from comments where id=${id}`
+  return query(_sql)
+}
+
 module.exports = {
   findUserByName,
   addUser,
   findUserByName,
   getAllArticle,
   findSession,
-  addArticle
+  addArticle,
+  findArticleById,
+  updateArticlePv,
+  deleteArticle,
+  deleteArticleComment,
+  addComment,
+  addArticleCommentCount,
+  reduceArticleCommentCount,
+  findCommentByArticleId,
+  deleteComment
 }

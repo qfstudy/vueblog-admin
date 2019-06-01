@@ -152,7 +152,7 @@ router.post('/blog/signout', async (ctx) => {
 // 写博客　保存
 router.post('/blog/write', async(ctx) => {
   let {title,content} = ctx.request.body
-  console.log('ctx.request.body'+title,content)
+  // console.log('ctx.request.body'+title,content)
   let id = ctx.session.id
   let name = ctx.session.userName
   let time = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -174,5 +174,140 @@ router.post('/blog/write', async(ctx) => {
     }
   })
 })
+
+// 文章详情页
+router.post('/blog/getanarticle', async(ctx) => {
+  let articleId = ctx.request.body.articleId
+  await mysqlModel.updateArticlePv(articleId).catch((error)=>{
+    ctx.body=error
+  })
+  await mysqlModel.findArticleById(articleId)
+    .then(async (res) => {
+      if(res.length>0){
+        ctx.body= {
+          code: 200,
+          data: res[0],
+          message: '获取文章成功'
+        }
+      }else{
+        ctx.body= {
+          code: 300,
+          data: res,
+          message: '没有这篇文章'
+        }
+      }
+    })
+    .catch((error)=>{
+      ctx.body={
+        code: 400,
+        message: '获取文章失败',
+        error
+      }
+    })
+})
+
+// 删除文章
+router.post('/blog/deleteanarticle', async(ctx) => {
+  let articleId = ctx.request.body.articleId
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.deleteArticleComment(articleId)
+    await mysqlModel.deleteArticle(articleId)
+      .then(() => {
+        ctx.body = {
+          code: 200,
+          message: '删除成功'
+        }
+      })
+  }).catch((error)=>{
+    ctx.body={
+      code: 400,
+      message: '删除失败',
+      error
+    }
+  })
+})
+
+
+// 保存评论 
+router.post('/blog/saveusercomment', async(ctx, next) => {
+  let userName = ctx.request.body.userName
+  let content = ctx.request.body.content
+  let articleId = ctx.request.body.articleId
+  let time = moment().format('YYYY-MM-DD HH:mm:ss')
+  let avatar
+  // console.log('发布评论')
+  await mysqlModel.findUserByName(userName)
+    .then(res => {
+      avatar = res[0]['avatar']
+    }).catch((error)=>{
+      ctx.body={
+        code: 400,
+        message: '添加评论获取头像失败',
+        error
+      }
+    })
+
+  await mysqlModel.addArticleCommentCount(articleId)
+    .catch((error)=>{
+      ctx.body={
+        code: 400,
+        message: '添加评论数失败',
+        error
+      }
+    })
+  await mysqlModel.addComment([userName, converter.makeHtml(content), time, articleId, avatar])
+    .then(() => {
+      ctx.body = {
+        code:200,
+        message:'发送成功'
+      }
+    }).catch((error) => {
+      ctx.body = {
+        code: 500,
+        message: '发送评论失败',
+        error
+      }
+    })    
+})
+
+// 获取评论
+router.post('/blog/getallcomment', async(ctx) => {
+  let articleId = ctx.request.body.articleId
+  await mysqlModel.findCommentByArticleId(articleId)
+    .then(res => {
+      ctx.body= {
+        code: 200,
+        data: res,
+        message: '获取评论成功'
+      }
+    }).catch((error)=>{
+      ctx.body={
+        code: 400,
+        message: '获取评论失败'
+      }
+    })
+})
+
+// 删除评论
+router.post('/blog/deleteusercomment', async(ctx) => {
+  let articleId = ctx.request.body.articleId
+  let commentId = ctx.request.body.commentId
+ 
+  await mysqlModel.reduceArticleCommentCount(articleId)
+  await mysqlModel.deleteComment(commentId)
+    .then(() => {
+      ctx.body = {
+        code: 200,
+        message: '删除评论成功'
+      }
+    }).catch((error) => {
+      ctx.body = {
+        code: 500,
+        message: '删除评论失败',
+        error:error
+      }
+    }) 
+})
+
 
 module.exports=router
