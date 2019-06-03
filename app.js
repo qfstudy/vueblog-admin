@@ -66,7 +66,7 @@ app.use(require('./src/routes/frontend.js').routes())
 // app.use(require('./src/routes/writeArticle.js').routes())
 // app.use(require('./src/routes/article.js').routes())
 // app.use(require('./src/routes/comment.js').routes())
-app.use(require('./src/routes/editArticle.js').routes())
+// app.use(require('./src/routes/editArticle.js').routes())
 app.use(require('./src/routes/user.js').routes())
 
 

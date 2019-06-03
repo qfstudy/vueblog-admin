@@ -4,7 +4,7 @@ const path=require('path')
 const md5 = require('md5')
 const moment = require('moment')
 const mysqlModel = require('../mysql/mysqlApi.js')
-const uploadToQiniu=require('../config/qiniuToken.js')
+const qiniuFunc=require('../config/qiniuToken.js')
 const checkSessionValue = require('../check/check.js').checkSessionValue
 // 验证码
 const captcha = require('trek-captcha')
@@ -151,14 +151,13 @@ router.post('/blog/signout', async (ctx) => {
 
 // 写博客　保存
 router.post('/blog/write', async(ctx) => {
-  let {title,content} = ctx.request.body
+  let {userName, avatar,title,content} = ctx.request.body
   // console.log('ctx.request.body'+title,content)
   let id = ctx.session.id
-  let name = ctx.session.userName
   let time = moment().format('YYYY-MM-DD HH:mm:ss')
   let newContent=converter.makeHtml(content).replace(/\n/gi,"<br/>")
   await checkSessionValue(ctx).then(async (res)=>{
-    await mysqlModel.addArticle([name, title,newContent, content, id, time])
+    await mysqlModel.addArticle([userName, title,newContent, content, id, time, avatar])
     .then((res) => {
       ctx.body = {
         code: 200,
@@ -230,23 +229,8 @@ router.post('/blog/deleteanarticle', async(ctx) => {
 
 // 保存评论 
 router.post('/blog/saveusercomment', async(ctx, next) => {
-  let userName = ctx.request.body.userName
-  let content = ctx.request.body.content
-  let articleId = ctx.request.body.articleId
+  let {userName,avatar,content,articleId}=ctx.request.body
   let time = moment().format('YYYY-MM-DD HH:mm:ss')
-  let avatar
-  // console.log('发布评论')
-  await mysqlModel.findUserByName(userName)
-    .then(res => {
-      avatar = res[0]['avatar']
-    }).catch((error)=>{
-      ctx.body={
-        code: 400,
-        message: '添加评论获取头像失败',
-        error
-      }
-    })
-
   await mysqlModel.addArticleCommentCount(articleId)
     .catch((error)=>{
       ctx.body={
@@ -309,5 +293,231 @@ router.post('/blog/deleteusercomment', async(ctx) => {
     }) 
 })
 
+// 编辑单篇文章页面
+router.post('/blog/getedit', async (ctx) => {
+  let articleId = ctx.request.body.articleId
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.findByArticleId(articleId)
+      .then(result => {       
+        ctx.body = {
+          code: 200,
+          message: '编辑成功',
+          data: result[0]
+        }
+      })
+  }).catch((error)=>{
+    ctx.body={
+      code: 400,
+      message: '编辑失败',
+      error
+    }
+  })
+})
 
+// 保存编辑单篇文章
+router.post('/blog/saveeditarticle', async (ctx) => {
+  let title = ctx.request.body.title
+  let content = ctx.request.body.content
+  let articleId = ctx.request.body.articleId
+  let newContent=converter.makeHtml(content).replace(/\n/gi,"<br/>")
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.updateArticle([title, newContent, content, articleId])
+    .then((res) => {
+      ctx.body = {
+        code: 200,
+        message: '保存成功'
+      }
+    })
+  }).catch((error) => {
+    ctx.body = {
+      code: 400,
+      message: '保存失败',
+      error
+    }
+  })  
+})
+
+//上传头像
+router.post('/blog/uploadavatar', async (ctx)=>{
+  console.log('avatar',ctx.request.body.userName)
+  let {userName,avatar} = ctx.request.body
+  let base64Data = avatar.replace(/^data:image\/\w+;base64,/, "")
+	let dataBuffer = new Buffer.from(base64Data, 'base64');
+	let setImageName = 'avatar'+Number(Math.random().toString().substr(3)).toString(36)+Date.now()+'.png'
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.findUserByName(userName).then(async (res)=>{
+      if(res.length>0&&res[0].avatar){
+        let oldAvatar=res[0].avatar
+        // let oldLocalFile=path.resolve(__dirname, '../public/images/')+ '/' + oldAvatar + '.png'  
+        fs.unlink('./public/images/avatar/' + oldAvatar, function(err) {
+          if (err) {
+            console.log(err)
+          }
+          console.log('旧头像删除成功')
+        })
+      }
+      // let localFile = path.resolve(__dirname, '../public/images/')+ '/' + setImageName + '.png'    
+      await Promise.all([
+        mysqlModel.uploadAvatar([setImageName, userName]),
+        mysqlModel.uploadCommentAvatar([setImageName, userName]),
+        mysqlModel.uploadArticleAvatar([setImageName, userName])
+      ]).then(res => {
+        console.log('上传成功')
+        ctx.body = {
+          code: 200,
+          avatar: setImageName,
+          message: '上传成功'
+        }
+      })
+      await fs.writeFile('./public/images/avatar/' + setImageName, dataBuffer, async (err) => {
+        if(err){
+          console.log(err)
+        }
+      })
+    })
+  }).catch(err => {
+		console.log(err)
+		ctx.body = {
+      code: 500,
+      message: '上传失败',
+      err
+    }
+	})
+})
+
+// 点赞
+router.post('/blog/addlike', async(ctx) => {
+  let {userName, articleId} = ctx.request.body
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.findLikeByUserAid(userName, articleId)
+    .then(async (res)=>{
+      if(res.length>0){
+        await mysqlModel.reduceLikeNum(articleId).then(async(res)=>{
+          ctx.body=true
+        })
+        await mysqlModel.deleteLike(userName, articleId).then((res)=>{
+          ctx.body={
+            code: 200,
+            message: '取消点赞'
+          }
+        })
+      }else{
+        await mysqlModel.increaseLikeNum(articleId).then(async(res)=>{
+          ctx.body=true
+        })
+        await mysqlModel.addLike([userName, articleId]).then(()=>{
+          ctx.body={
+            code: 200,
+            message: '点赞成功'
+          }
+        })
+      }
+    })
+  }).catch((error)=>{
+    console.log('like error: ',error)
+    ctx.body={
+      code: 400,
+      message: '点赞失败',
+      error
+    }
+  })
+})
+
+// 获取点赞
+router.post('/blog/getlike',async (ctx)=>{
+  let {userName, articleId} = ctx.request.body
+  console.log('获取点赞', ctx.request.body)
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.findLikeByUserAid(userName, articleId).then(res=>{
+      console.log('获取点赞',res)
+      ctx.body={
+        code: 200,
+        data: res[0]
+      }
+    })
+  }).catch((error)=>{
+    console.log('获取点赞失败',error)
+    ctx.body={
+      code: 400,
+      message: '获取点赞失败'
+    }
+  })
+})
+
+// 收藏
+router.post('/blog/addcollection', async(ctx) => {
+  let {userName, articleId} = ctx.request.body
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.findCollectionByUserAid(userName, articleId)
+    .then(async (res)=>{
+      if(res.length>0){
+        await mysqlModel.reduceCollectionNum(articleId).then(async(res)=>{
+          ctx.body=true
+        })
+        await mysqlModel.deleteCollection(userName, articleId).then((res)=>{
+          ctx.body={
+            code: 200,
+            message: '取消收藏'
+          }
+        })
+      }else{
+        await mysqlModel.increaseCollectionNum(articleId).then(async(res)=>{
+          ctx.body=true
+        })
+        await mysqlModel.addCollection([userName, articleId]).then(()=>{
+          ctx.body={
+            code: 200,
+            message: '收藏成功'
+          }
+        })
+      }
+    })
+  }).catch((error)=>{
+    console.log('like error: ',error)
+    ctx.body={
+      code: 400,
+      message: '收藏失败',
+      error
+    }
+  })
+})
+
+// 获取收藏
+router.post('/blog/getcollection',async (ctx)=>{
+  let {userName, articleId} = ctx.request.body
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.findCollectionByUserAid(userName, articleId).then(res=>{
+      console.log('获取收藏',res)
+      ctx.body={
+        code: 200,
+        data: res[0]
+      }
+    })
+  }).catch((error)=>{
+    console.log('获取收藏失败',error)
+    ctx.body={
+      code: 400,
+      message: '获取收藏失败'
+    }
+  })
+})
+
+// 获取五篇文章
+router.post('/blog/getnewarticle',async (ctx)=>{
+  let {userName} = ctx.request.body
+  await mysqlModel.getNewArticle(userName).then((res)=>{
+    console.log(res)
+    ctx.body={
+      code: 200,
+      message: '获取五篇文章成功',
+      data: res
+    }
+  }).catch(error=>{
+    console.log(error)
+    ctx.body={
+      code: 400,
+      message: "获取五篇文章失败"
+    }
+  })
+})
 module.exports=router

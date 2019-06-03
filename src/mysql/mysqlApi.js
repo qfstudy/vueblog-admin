@@ -52,6 +52,7 @@ let tableToObj={
       md TEXT(0) NOT NULL COMMENT 'markdown格式',
       userid INT(40) UNSIGNED NOT NULL COMMENT '用户id',
       date VARCHAR(40) NOT NULL COMMENT '发布日期',
+      avatar VARCHAR(100) NOT NULL DEFAULT '' COMMENT '用户头像',
       comments INT(100) UNSIGNED NOT NULL DEFAULT '0' COMMENT '文章评论数',
       pv INT(100) UNSIGNED NOT NULL DEFAULT '0' COMMENT '浏览量',
       collection INT(100) UNSIGNED NOT NULL DEFAULT '0' COMMENT '收藏数',
@@ -65,7 +66,7 @@ let tableToObj={
       content TEXT(0) NOT NULL COMMENT '评论内容',
       date VARCHAR(40) NOT NULL COMMENT '评论时间',
       articleid INT(100) UNSIGNED NOT NULL COMMENT '文章id',
-      avatar VARCHAR(100) NOT NULL DEFAULT '0' COMMENT '用户头像',
+      avatar VARCHAR(100) NOT NULL DEFAULT '' COMMENT '用户头像',
       PRIMARY KEY(id) 
     )ENGINE=InnoDB DEFAULT CHARSET=utf8;`,
 
@@ -131,7 +132,7 @@ let getAllArticle = () => {
 
 //　发布文章  
 let addArticle = ( value ) => {
-  let _sql = "insert into articles set name=?,title=?,content=?,md=?,userid=?,date=?;"
+  let _sql = "insert into articles set name=?,title=?,content=?,md=?,userid=?,date=?,avatar=?;"
   return query( _sql, value )
 }
 
@@ -188,6 +189,97 @@ let deleteComment = (id) => {
   return query(_sql)
 }
 
+// 通过文章id查找  
+let findByArticleId =  ( id ) => {
+  let _sql = `select * from articles where id="${id}";`
+  return query( _sql)
+}
+
+// 更新修改文章  
+let updateArticle = (values) => {
+  let _sql = `update articles set title=?,content=?,md=? where id=?`
+  return query(_sql,values)
+}
+
+// 上传头像 
+let uploadAvatar = ( value ) => {
+  var _sql = `update users set avatar=? where userName=?;`
+  return query( _sql , value)
+}
+
+// 更新评论头像 
+let uploadCommentAvatar = ( value ) => {
+  let _sql = "update comments set avatar=? where userName=?"
+  return query( _sql, value )
+}
+
+// 上传文章头像 
+let uploadArticleAvatar = ( value ) => {
+  let _sql = "update articles set avatar=? where name=?"
+  return query( _sql, value )
+}
+
+// 点赞 
+let addLike = ( value ) => {
+  let _sql = "insert into likes set userName=?,articleid=?;"
+  return query( _sql, value )
+}
+
+let findLikeByUserAid=(userName,articleId)=>{
+  var _sql = `select * from likes where articleid="${articleId}" and userName="${userName}";`
+  return query( _sql )
+}
+
+// 删除点赞
+let deleteLike=(userName,articleId)=>{
+  let _sql = `delete from likes where userName="${userName}" and articleid="${articleId}";`
+  return query( _sql )
+}
+
+// 增加点赞数
+let increaseLikeNum=(articleId)=>{
+  let _sql = `update articles set likenum = likenum + 1 where id="${articleId}"`
+  return query( _sql)
+}
+// 减少点赞数
+let reduceLikeNum=(articleId)=>{
+  let _sql = `update articles set likenum = likenum - 1 where id="${articleId}"`
+  return query( _sql)
+}
+
+// 收藏 
+let addCollection = ( value ) => {
+  let _sql = "insert into collections set userName=?,articleid=?;"
+  return query( _sql, value )
+}
+
+let findCollectionByUserAid=(userName,articleId)=>{
+  var _sql = `select * from collections where articleid="${articleId}" and userName="${userName}";`
+  return query( _sql )
+}
+
+// 删除收藏
+let deleteCollection=(userName,articleId)=>{
+  let _sql = `delete from collections where userName="${userName}" and articleid="${articleId}";`
+  return query( _sql )
+}
+
+// 增加收藏数
+let increaseCollectionNum=(articleId)=>{
+  let _sql = `update articles set collection = collection + 1 where id="${articleId}"`
+  return query( _sql)
+}
+// 减少收藏数
+let reduceCollectionNum=(articleId)=>{
+  let _sql = `update articles set collection = collection - 1 where id="${articleId}"`
+  return query( _sql)
+}
+
+let getNewArticle=(userName)=>{
+  let _sql=`select * from articles where name="${userName}" limit 0,5 `
+  return query(_sql)
+}
+
 module.exports = {
   findUserByName,
   addUser,
@@ -203,5 +295,21 @@ module.exports = {
   addArticleCommentCount,
   reduceArticleCommentCount,
   findCommentByArticleId,
-  deleteComment
+  deleteComment,
+  findByArticleId,
+  updateArticle,
+  uploadAvatar,
+  uploadCommentAvatar,
+  uploadArticleAvatar,
+  addLike,
+  deleteLike,
+  findLikeByUserAid,
+  addCollection,
+  findCollectionByUserAid,
+  deleteCollection,
+  increaseLikeNum,
+  reduceLikeNum,
+  increaseCollectionNum,
+  reduceCollectionNum,
+  getNewArticle
 }
