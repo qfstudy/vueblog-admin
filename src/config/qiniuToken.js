@@ -1,7 +1,7 @@
 const qiniu = require('qiniu')
 
-let accessKey = 'dcDQvw2lRIxTsCR_Hs4rpY2i5FsmP4PnzkUJF5hs'
-let secretKey = 'qK8zDVzR5h1UoeOSGkrZynceBaxO_lDdQXaTROIg'
+let accessKey = '******'
+let secretKey = '******'
 
 let mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 

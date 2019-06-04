@@ -59,16 +59,6 @@ app.use(async (ctx,next)=>{
 
 //路由
 app.use(require('./src/routes/frontend.js').routes())
-// app.use(require('./src/routes/signup.js').routes())
-// app.use(require('./src/routes/signin.js').routes())
-// app.use(require('./src/routes/signout.js').routes())
-// app.use(require('./src/routes/allArticle.js').routes())
-// app.use(require('./src/routes/writeArticle.js').routes())
-// app.use(require('./src/routes/article.js').routes())
-// app.use(require('./src/routes/comment.js').routes())
-// app.use(require('./src/routes/editArticle.js').routes())
-// app.use(require('./src/routes/user.js').routes())
-
 
 app.listen(5000)
 
