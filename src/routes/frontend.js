@@ -520,4 +520,82 @@ router.post('/blog/getnewarticle',async (ctx)=>{
     }
   })
 })
+
+// 获取一个用户所有文章
+router.post('/blog/userallarticle',async(ctx)=>{
+  let userName=ctx.request.body.userName
+  await mysqlModel.findArticleByUser(userName)
+    .then(result => {
+      result.forEach((item)=>{
+        item.content=item.content.split('<pre>')[0].replace(/<[^>]+>/g,"").trim()
+      })
+      ctx.body = {
+        code: 200,
+        data: result
+      }
+    }).catch((error)=>{
+      ctx.body={
+        code: 400,
+        message: error
+      }
+    })
+})
+
+// 获取用户like
+router.post('/blog/getalllike',async (ctx)=>{
+  let userName=ctx.request.body.userName
+  await mysqlModel.findLikeByUser(userName).then(res=>{
+    console.log(res)
+    ctx.body={
+      code: 200,
+      data: res,
+      message: '获取个人点赞成'
+    }
+  }).catch((error)=>{
+    ctx.body={
+      code: 400,
+      message: error
+    }
+  })
+})
+
+// 获取用户collection
+router.post('/blog/getallcollection',async (ctx)=>{
+  let userName=ctx.request.body.userName
+  await mysqlModel.findCollectionByUser(userName).then(res=>{
+    console.log(res)
+    ctx.body={
+      code: 200,
+      data: res,
+      message: '获取个人收藏成功'
+    }
+  }).catch((error)=>{
+    ctx.body={
+      code: 400,
+      message: error
+    }
+  })
+})
+
+
+// 保存用户信息 avatar=?,github=?,blog=?,email=? where userName=?
+router.post('/blog/saveuserinfo',async(ctx)=>{
+  // console.log(ctx.request.body)
+  let {avatar,github,blog,email,userName}=ctx.request.body
+  await checkSessionValue(ctx).then(async (res)=>{
+    await mysqlModel.updateUser([avatar,github,blog,email,userName]).then(res=>{
+      // console.log(res)
+      ctx.body={
+        code: 200,
+        message: '保存用户信息成功'
+      }
+    })
+  }).catch(error=>{
+    console.log(error)
+    ctx.body={
+      code: 400,
+      message: '保存用户信息错误'
+    }
+  })
+})
 module.exports=router

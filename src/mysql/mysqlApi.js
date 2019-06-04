@@ -230,6 +230,11 @@ let findLikeByUserAid=(userName,articleId)=>{
   return query( _sql )
 }
 
+let findLikeByUser=(userName)=>{
+  var _sql = `select * from likes where userName="${userName}";`
+  return query( _sql )
+}
+
 // 删除点赞
 let deleteLike=(userName,articleId)=>{
   let _sql = `delete from likes where userName="${userName}" and articleid="${articleId}";`
@@ -258,6 +263,11 @@ let findCollectionByUserAid=(userName,articleId)=>{
   return query( _sql )
 }
 
+let findCollectionByUser=(userName)=>{
+  var _sql = `select * from collections where userName="${userName}";`
+  return query( _sql )
+}
+
 // 删除收藏
 let deleteCollection=(userName,articleId)=>{
   let _sql = `delete from collections where userName="${userName}" and articleid="${articleId}";`
@@ -279,6 +289,19 @@ let getNewArticle=(userName)=>{
   let _sql=`select * from articles where name="${userName}" limit 0,5 `
   return query(_sql)
 }
+
+// 通过用户的名字查找文章 
+let findArticleByUser =  ( userName ) => {
+  let _sql = `select * from articles where name="${userName}";`
+  return query( _sql)
+}
+
+// 保存用户个人信息
+let updateUser= (values) => {
+  let _sql = `update users set avatar=?,github=?,blog=?,email=? where userName=?`
+  return query(_sql,values)
+}
+
 
 module.exports = {
   findUserByName,
@@ -304,12 +327,16 @@ module.exports = {
   addLike,
   deleteLike,
   findLikeByUserAid,
+  findLikeByUser,
   addCollection,
   findCollectionByUserAid,
+  findCollectionByUser,
   deleteCollection,
   increaseLikeNum,
   reduceLikeNum,
   increaseCollectionNum,
   reduceCollectionNum,
-  getNewArticle
+  getNewArticle,
+  findArticleByUser,
+  updateUser
 }
