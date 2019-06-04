@@ -210,6 +210,8 @@ router.post('/blog/deleteanarticle', async(ctx) => {
   let articleId = ctx.request.body.articleId
   await checkSessionValue(ctx).then(async (res)=>{
     await mysqlModel.deleteArticleComment(articleId)
+    await mysqlModel.deleteCollectionById(articleId)
+    await mysqlModel.deleteLikeById(articleId)
     await mysqlModel.deleteArticle(articleId)
       .then(() => {
         ctx.body = {
