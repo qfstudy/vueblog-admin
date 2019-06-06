@@ -241,6 +241,12 @@ let deleteLike=(userName,articleId)=>{
   return query( _sql )
 }
 
+// 删除文章时删除点赞
+let deleteLikeById=(articleId)=>{
+  let _sql = `delete from likes where articleid="${articleId}";`
+  return query( _sql )
+}
+
 // 增加点赞数
 let increaseLikeNum=(articleId)=>{
   let _sql = `update articles set likenum = likenum + 1 where id="${articleId}"`
@@ -271,6 +277,12 @@ let findCollectionByUser=(userName)=>{
 // 删除收藏
 let deleteCollection=(userName,articleId)=>{
   let _sql = `delete from collections where userName="${userName}" and articleid="${articleId}";`
+  return query( _sql )
+}
+
+// 删除文章时删除收藏
+let deleteCollectionById=(articleId)=>{
+  let _sql = `delete from collections where articleid="${articleId}";`
   return query( _sql )
 }
 
@@ -338,5 +350,7 @@ module.exports = {
   reduceCollectionNum,
   getNewArticle,
   findArticleByUser,
-  updateUser
+  updateUser,
+  deleteCollectionById,
+  deleteLikeById
 }

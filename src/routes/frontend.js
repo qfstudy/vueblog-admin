@@ -4,7 +4,6 @@ const path=require('path')
 const md5 = require('md5')
 const moment = require('moment')
 const mysqlModel = require('../mysql/mysqlApi.js')
-const qiniuFunc=require('../config/qiniuToken.js')
 const checkSessionValue = require('../check/check.js').checkSessionValue
 // 验证码
 const captcha = require('trek-captcha')
