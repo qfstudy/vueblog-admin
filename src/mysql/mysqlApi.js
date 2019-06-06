@@ -314,6 +314,12 @@ let updateUser= (values) => {
   return query(_sql,values)
 }
 
+// 搜索文章
+let searchArticle=(title)=>{
+  let _sql=`select * from articles where title like "%${title}%";`
+  return query(_sql)
+}
+
 
 module.exports = {
   findUserByName,
@@ -352,5 +358,6 @@ module.exports = {
   findArticleByUser,
   updateUser,
   deleteCollectionById,
-  deleteLikeById
+  deleteLikeById,
+  searchArticle
 }
