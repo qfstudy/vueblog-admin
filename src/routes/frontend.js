@@ -57,7 +57,7 @@ router.post("/blog/signin", async ctx => {
           userName: result[0]["userName"],
           id: result[0]["id"]
         };
-        console.log("signin: ", "登录成功");
+        // console.log("signin: ", "登录成功");
         ctx.body = {
           code: 200,
           message: "登录成功"
@@ -398,7 +398,7 @@ router.post("/blog/saveeditarticle", async ctx => {
 
 //上传头像
 router.post("/blog/uploadavatar", async ctx => {
-  console.log("avatar", ctx.request.body.userName);
+  // console.log("avatar", ctx.request.body.userName);
   let { userName, avatar } = ctx.request.body;
   let base64Data = avatar.replace(/^data:image\/\w+;base64,/, "");
   let dataBuffer = new Buffer.from(base64Data, "base64");
@@ -502,11 +502,11 @@ router.post("/blog/addlike", async ctx => {
 // 获取点赞
 router.post("/blog/getlike", async ctx => {
   let { userName, articleId } = ctx.request.body;
-  console.log("获取点赞", ctx.request.body);
+  // console.log("获取点赞", ctx.request.body);
   await checkSessionValue(ctx)
     .then(async res => {
       await mysqlModel.findLikeByUserAid(userName, articleId).then(res => {
-        console.log("获取点赞", res);
+        // console.log("获取点赞", res);
         ctx.body = {
           code: 200,
           data: res[0]
@@ -573,7 +573,7 @@ router.post("/blog/getcollection", async ctx => {
       await mysqlModel
         .findCollectionByUserAid(userName, articleId)
         .then(res => {
-          console.log("获取收藏", res);
+          // console.log("获取收藏", res);
           ctx.body = {
             code: 200,
             data: res[0]
@@ -595,7 +595,7 @@ router.post("/blog/getnewarticle", async ctx => {
   await mysqlModel
     .getNewArticle(userName)
     .then(res => {
-      console.log(res);
+      // console.log(res);
       ctx.body = {
         code: 200,
         message: "获取五篇文章成功",
@@ -642,7 +642,7 @@ router.post("/blog/getalllike", async ctx => {
   await mysqlModel
     .findLikeByUser(userName)
     .then(res => {
-      console.log(res);
+      // console.log(res);
       ctx.body = {
         code: 200,
         data: res,
@@ -663,7 +663,7 @@ router.post("/blog/getallcollection", async ctx => {
   await mysqlModel
     .findCollectionByUser(userName)
     .then(res => {
-      console.log(res);
+      // console.log(res);
       ctx.body = {
         code: 200,
         data: res,
