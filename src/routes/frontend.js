@@ -463,6 +463,9 @@ router.post("/blog/addlike", async ctx => {
   let { userName, articleId } = ctx.request.body;
   await checkSessionValue(ctx)
     .then(async res => {
+      await mysqlModel.reduceArticlePv(articleId).catch(error => {
+        ctx.body = error;
+      });
       await mysqlModel
         .findLikeByUserAid(userName, articleId)
         .then(async res => {
@@ -527,6 +530,9 @@ router.post("/blog/addcollection", async ctx => {
   let { userName, articleId } = ctx.request.body;
   await checkSessionValue(ctx)
     .then(async res => {
+      await mysqlModel.reduceArticlePv(articleId).catch(error => {
+        ctx.body = error;
+      });
       await mysqlModel
         .findCollectionByUserAid(userName, articleId)
         .then(async res => {

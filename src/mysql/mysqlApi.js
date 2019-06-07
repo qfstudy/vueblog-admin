@@ -148,6 +148,12 @@ let updateArticlePv = ( value ) => {
   return query( _sql, value )
 }
 
+// 更新浏览数 
+let reduceArticlePv = ( value ) => {
+  let _sql = "update articles set pv= pv - 1 where id=?"
+  return query( _sql, value )
+}
+
 // 删除文章  
 let deleteArticle = (id) => {
   let _sql = `delete from articles where id = ${id}`
@@ -330,6 +336,7 @@ module.exports = {
   addArticle,
   findArticleById,
   updateArticlePv,
+  reduceArticlePv,
   deleteArticle,
   deleteArticleComment,
   addComment,

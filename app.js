@@ -57,10 +57,7 @@ app.use(async (ctx, next) => {
   //使用Access-Control-Allow-Credentials时，Access-Control-Allow-Origin值只能是一个域名
   ctx.set("Access-Control-Allow-Credentials", true);
   ctx.set("Access-Control-Allow-Methods", "*");
-  ctx.set(
-    "Access-Control-Allow-Headers",
-    "Content-Type,Access-Token,Authorization,Accept"
-  );
+  ctx.set("Access-Control-Allow-Headers","Content-Type,Access-Token,Authorization,Accept");
   await next();
 });
 
