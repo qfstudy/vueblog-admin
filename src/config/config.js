@@ -5,7 +5,7 @@ const config={
   database: {
     DATABASE: 'vueblog',
     USERNAME: 'root',
-    PASSWORD: 'xd1402051',
+    PASSWORD: '******',
     PORT: '3306',
     HOST : 'localhost'
   }
