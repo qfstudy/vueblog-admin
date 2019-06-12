@@ -28,13 +28,17 @@
 ### 运行后端项目
 
 `cd vueblog-admin`
+
 `npm i`
+
 `node app.js`
 
 ### 运行前端项目
 
 `cd vueblog-vue`
+
 `npm i`
+
 `npm run dev`
 
 ### 功能
